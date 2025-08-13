@@ -34,12 +34,19 @@ Rscript DE.R
 This script will:
 
 Load sample metadata and Kallisto quantification results.
+
 Perform exploratory data analysis, generating a PCA plot.
+
 Query the Ensembl BioMart database (Oct 2024 archive) to annotate transcripts with gene names.
+
 Run a transcript-level DE analysis using the limma-voom pipeline.
+
 Run a gene-level DE analysis using sleuth.
+
 Summarise the limma results at the gene level.
+
 Identify the intersection of significant genes found by both methods.
+
 Generate all primary output files (see below).
 
 ## Step 2: Heatmap Visualisation
@@ -53,8 +60,11 @@ Rscript heat.R
 This script will:
 
 Load the intersection results file (Intersection_limma_sleuth_DE_genes.tsv).
+
 Re-generate the normalised expression data from the limma-voom analysis.
+
 Subset the expression matrix to include only the 375 high-confidence genes.
+
 Generate a clustered heatmap, scaling by gene (row) to visualise expression patterns.
 
 ## Output Files
@@ -62,14 +72,23 @@ Generate a clustered heatmap, scaling by gene (row) to visualise expression patt
 Running these scripts will generate the following output files in the project directory:
 
 Plots (.pdf)
+
 PCA_Infected_vs_Mock.pdf: PCA plot showing sample clustering.
+
 Volcano_Plot_limma_gene_level.pdf: Volcano plot of all genes from the limma analysis.
+
 Volcano_Plot_Intersection.pdf: Volcano plot showing only the high-confidence intersecting genes.
+
 Heatmap_Top_DE_Genes.pdf: Clustered heatmap of the intersecting genes.
 
 Data Tables (.tsv)
+
 limma_gene_level_all.tsv: Gene-level results for all genes from the limma analysis.
+
 limma_gene_level_DE_only.tsv: A filtered table of only the significant DE genes from limma.
+
 sleuth_gene_level_all.tsv: Gene-level results for all genes from the sleuth analysis.
+
 sleuth_gene_level_DE_only.tsv: A filtered table of only the significant DE genes from sleuth.
+
 Intersection_limma_sleuth_DE_genes.tsv: The final table of 375 high-confidence genes found by both methods, with their associated statistics.
