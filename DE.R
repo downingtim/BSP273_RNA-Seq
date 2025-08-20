@@ -212,7 +212,7 @@ readr::write_tsv(results_sleuth, "sleuth_gene_level_all.tsv")
 
 # File 4: DE genes only from sleuth analysis
 sleuth_de_genes_only <- results_sleuth %>%
-  dplyr::filter(qval <= 0.05)
+  dplyr::filter(qval <= 0.01)
 readr::write_tsv(sleuth_de_genes_only, "sleuth_gene_level_DE_only.tsv")
 
 
