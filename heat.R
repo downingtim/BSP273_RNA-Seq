@@ -1,5 +1,3 @@
-# heatmap_analysis.R
-
 # --- 1. SETUP: LOAD LIBRARIES ---
 library(dplyr)
 library(readr)
@@ -12,17 +10,14 @@ library(edgeR)
 library(limma)
 
 # --- 2. LOAD DATA ---
-print("### Loading metadata and intersection results...")
 # Reading the .tsv file with read_tsv()
 intersect_results <- readr::read_tsv("Intersection_limma_sleuth_DE_genes.tsv")
-
 # Load the sample metadata (this was originally a CSV)
 metadata_path <- "/mnt/lustre/RDS-live/bioinformatics/proj/bsp/bsp_273/nicos/bulk_de/sample_condition_path.csv"
 s2c <- readr::read_csv(metadata_path)
 colnames(s2c)[1] = "sample"
 
 # --- 3. RE-GENERATE NORMALISED EXPRESSION DATA ---
-print("### Preparing normalised expression matrix...")
 files <- file.path(s2c$path, "abundance.h5")
 names(files) <- s2c$sample
 txi <- tximport(files, type = "kallisto", txOut = TRUE)
@@ -66,5 +61,3 @@ pheatmap(heatmap_matrix,
          fontsize_col = 10
 )
 dev.off()
-
-print("### Heatmap analysis complete. 'Heatmap_Top_DE_Genes.pdf' has been saved.")

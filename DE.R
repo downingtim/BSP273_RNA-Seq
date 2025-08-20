@@ -36,6 +36,8 @@ library(sleuth)
 #################################################################
 
 metadata_path <- "/mnt/lustre/RDS-live/bioinformatics/proj/bsp/bsp_273/nicos/bulk_de/sample_condition_path.csv"
+metadata_path <- "/mnt/lustre/RDS-ephemeral/bioinformatics/proj/bsp/bsp_273/bulk_analysis/DE_testing/input.csv"
+# /mnt/lustre/RDS-ephemeral/bioinformatics/proj/bsp/bsp_273/bulk_analysis/kallisto.combined
 s2c <- readr::read_csv(metadata_path)
 colnames(s2c)[1] = "sample"
 print("### Sample Metadata:")
@@ -66,21 +68,19 @@ pca_df <- as.data.frame(pca_result$x) %>%
 
 var_explained <- round(100 * pca_result$sdev^2 / sum(pca_result$sdev^2), 1)
 
-pdf("PCA_Infected_vs_Mock.pdf", width = 7, height = 5)
-ggplot(pca_df, aes(x = PC1, y = PC2, colour = condition, shape = condition)) +
-  geom_point(size = 5, alpha = 0.8) +
-  labs(x = paste0("PC1 (", var_explained[1], "% variance)"),
-       y = paste0("PC2 (", var_explained[2], "% variance)"),
-       colour = "Condition", shape = "Condition") +
-  theme_bw(base_size = 14)
+pdf("PCA_Infected_vs_Mock.pdf", width = 8, height = 5)
+ggplot(pca_df, aes(x = PC1, y = PC2, colour=condition)) +
+  geom_point(size = 6, alpha = 0.6) +
+  labs(x = paste0("PC1 (", var_explained[1], "%)"),
+       y = paste0("PC2 (", var_explained[2], "%)"),
+       colour = "Condition") +
+  theme_bw(base_size = 16)
 dev.off()
-
 
 # --- 3.2. Sample Correlation Heatmap ---
 pdf("Sample_Correlation_Heatmap.pdf", width = 8, height = 8)
 plot_sample_heatmap(so, use_filtered = TRUE)
 dev.off()
-
 
 #################################################################
 ### 4. GENE ANNOTATION FROM BIOMART (ROBUST METHOD)
@@ -135,7 +135,7 @@ design <- model.matrix(~condition, data = s2c)
 keep <- filterByExpr(y, design)
 y <- y[keep, , keep.lib.sizes = FALSE]
 y <- calcNormFactors(y)
-v <- voom(y, design, plot = TRUE)
+v <- voom(y, design, plot = F)
 
 fit <- lmFit(v, design)
 fit <- eBayes(fit, trend = TRUE)

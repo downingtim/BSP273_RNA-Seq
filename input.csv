@@ -1,0 +1,13 @@
+sample, condition, path
+BSP26_1_S1,infc,/mnt/lustre/RDS-ephemeral/bioinformatics/proj/bsp/bsp_273/bulk_analysis/kallisto.combined/BSP26_1_S1
+BSP26_2_S2,mock,/mnt/lustre/RDS-ephemeral/bioinformatics/proj/bsp/bsp_273/bulk_analysis/kallisto.combined/BSP26_2_S2
+BSP26_3_S3,infc,/mnt/lustre/RDS-ephemeral/bioinformatics/proj/bsp/bsp_273/bulk_analysis/kallisto.combined/BSP26_3_S3
+BSP26_4_S4,mock,/mnt/lustre/RDS-ephemeral/bioinformatics/proj/bsp/bsp_273/bulk_analysis/kallisto.combined/BSP26_4_S4
+BSP26_5_S5,mock,/mnt/lustre/RDS-ephemeral/bioinformatics/proj/bsp/bsp_273/bulk_analysis/kallisto.combined/BSP26_5_S5
+BSP26_6_S6,infc,/mnt/lustre/RDS-ephemeral/bioinformatics/proj/bsp/bsp_273/bulk_analysis/kallisto.combined/BSP26_6_S6
+BSP26_7_S7,infc,/mnt/lustre/RDS-ephemeral/bioinformatics/proj/bsp/bsp_273/bulk_analysis/kallisto.combined/BSP26_7_S7
+BSP26_8_S8,mock,/mnt/lustre/RDS-ephemeral/bioinformatics/proj/bsp/bsp_273/bulk_analysis/kallisto.combined/BSP26_8_S8
+BSP26_9_S9,infc,/mnt/lustre/RDS-ephemeral/bioinformatics/proj/bsp/bsp_273/bulk_analysis/kallisto.combined/BSP26_9_S9
+BSP26_10_S10,mock,/mnt/lustre/RDS-ephemeral/bioinformatics/proj/bsp/bsp_273/bulk_analysis/kallisto.combined/BSP26_10_S10
+BSP26_11_S11,mock,/mnt/lustre/RDS-ephemeral/bioinformatics/proj/bsp/bsp_273/bulk_analysis/kallisto.combined/BSP26_11_S11
+BSP26_12_S12,infc,/mnt/lustre/RDS-ephemeral/bioinformatics/proj/bsp/bsp_273/bulk_analysis/kallisto.combined/BSP26_12_S12
