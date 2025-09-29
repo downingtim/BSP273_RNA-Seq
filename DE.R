@@ -233,7 +233,7 @@ readr::write_tsv(combined_intersect_df, "Intersection_limma_sleuth_DE_genes.tsv"
 # --- 7.4. Create a Volcano Plot for the intersecting genes only ---
 pdf("Volcano_Plot_Intersection.pdf", width = 8, height = 6)
 ggplot(combined_intersect_df, aes(x = logFC, y = -log10(adj.P.Val), colour = significant)) +
-  geom_point(alpha = 0.7, size = 2) +
+  geom_point(alpha = 0.7, size = 2) + ylim(0, 10.6) + 
   scale_colour_manual(name = "",
         values = c("Upregulated in Infected" = "red", "Downregulated in Infected" = "blue")) +
   geom_text_repel(aes(label = gene_label), size = 3.5, box.padding = 0.5, max.overlaps = 20) +
