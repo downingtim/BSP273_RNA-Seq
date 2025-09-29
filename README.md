@@ -2,9 +2,7 @@
 
 Differential gene expression analysis of BSP273 data 
 
-===============================================================
-Differential Expression Analysis of Infected vs. Mock Samples
-===============================================================
+# Differential Expression Analysis of Infected vs. Mock Samples
 
 This repository contains the scripts and results for a differential 
 expression (DE) analysis of RNA-Seq data, comparing infected samples 
@@ -21,12 +19,10 @@ Conda environment to ensure all package dependencies are compatible.
 
 
 1. Create Conda Environment
-----------------------------
-
 First, create and activate the Conda environment. This only needs to 
 be done once.
 
-  # Create the environment with all necessary R packages
+2. Create the environment with all necessary R packages
   conda create -n r_de_env -c conda-forge -c bioconda \
     r-base=4.2.2 r-essentials bioconductor-limma \
     bioconductor-edger bioconductor-tximport \
@@ -37,25 +33,20 @@ be done once.
   conda activate r_de_env
 
 
-2. Required Data
-----------------
+3. Required Data
 
 Place the following file in the root of the project directory:
-
   * sample_condition_path.csv: A CSV file containing the sample 
     metadata with three columns: sample, condition, and path.
 
 
-Analysis Workflow
-=================
+4. Analysis Workflow
 
 The analysis is performed in two main steps using the provided R 
 scripts. Ensure you have activated the Conda environment 
 (conda activate r_de_env) before running them.
 
-
-Step 1: Differential Expression Analysis
------------------------------------------
+4.1: Differential Expression Analysis
 
 The DE.R script is the primary analysis pipeline. It performs the 
 end-to-end differential expression analysis.
@@ -78,8 +69,7 @@ This script will:
   * Generate all primary output files (see below).
 
 
-Step 2: Heatmap Visualisation
-------------------------------
+4.2: Heatmap Visualisation
 
 The heat.R script takes the high-confidence intersection results 
 from the first step and creates a clustered heatmap.
@@ -100,8 +90,7 @@ This script will:
     expression patterns.
 
 
-Output Files
-============
+4.3 Output Files
 
 Running these scripts will generate the following output files in 
 the project directory:
