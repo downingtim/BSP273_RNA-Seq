@@ -103,8 +103,7 @@ t2g <- readr::read_tsv(httr::content(response, "text", encoding = "UTF-8"),
                        col_names = c("ensembl_transcript_id", "transcript_version",
                                      "ensembl_gene_id", "external_gene_name", "description"))
 
-t2g <- t2g %>%
-  dplyr::rename(ens_gene = ensembl_gene_id,
+t2g <- t2g %>%  dplyr::rename(ens_gene = ensembl_gene_id,
                 ext_gene = external_gene_name) %>%
   dplyr::mutate(target_id = paste(ensembl_transcript_id, transcript_version, sep = "."))
 
@@ -132,16 +131,13 @@ fit <- eBayes(fit, trend = TRUE)
 results_limma_transcript <- topTable(fit, coef = "conditioninfc", n = Inf)
 
 annotated_transcripts <- results_limma_transcript %>%
-  tibble::rownames_to_column(var = "target_id") %>%
-  dplyr::left_join(t2g, by = "target_id")
+  tibble::rownames_to_column(var = "target_id") %>% dplyr::left_join(t2g, by = "target_id")
 
 # Create a robust gene-level summary
 gene_level_limma_results <- annotated_transcripts %>%
-  dplyr::filter(!is.na(ens_gene)) %>%
-  dplyr::group_by(ens_gene) %>%
+  dplyr::filter(!is.na(ens_gene)) %>%  dplyr::group_by(ens_gene) %>%
   dplyr::slice_min(order_by = adj.P.Val, n = 1, with_ties = FALSE) %>%
-  dplyr::ungroup() %>%
-  dplyr::distinct(ens_gene, .keep_all = TRUE)
+  dplyr::ungroup() %>%  dplyr::distinct(ens_gene, .keep_all = TRUE)
 
 # Add significance flags and labels
 gene_level_limma_results <- gene_level_limma_results %>%
@@ -150,10 +146,9 @@ gene_level_limma_results <- gene_level_limma_results %>%
     significant = case_when(
       adj.P.Val < 0.05 & logFC > 2  ~ "Upregulated in Infected",
       adj.P.Val < 0.05 & logFC < -2 ~ "Downregulated in Infected",
-      TRUE                         ~ "Not Significant"    )
+      TRUE                         ~ "Not Significant"    ) # 50% power
   )
 
-# --- 5.5. Save Limma Output Files ---
 # File 1: All genes from limma analysis
 readr::write_tsv(gene_level_limma_results, "limma_gene_level_all.tsv")
 
@@ -168,11 +163,11 @@ ggplot(gene_level_limma_results, aes(x = logFC, y = -log10(adj.P.Val), colour = 
   geom_point(alpha = 0.4, size = 1.5) +
   geom_vline(xintercept = c(-2, 2), linetype = "dashed", color = "grey50") +
   geom_hline(yintercept = -log10(0.05), linetype = "dashed", color = "grey50") +
-  scale_colour_manual(name = "Significance",
+  scale_colour_manual(name = "",
   values = c("Upregulated in Infected" = "red", "Downregulated in Infected" = "blue", "Not Significant" = "grey"))+
-  geom_text_repel(data = head(limma_de_genes_only, 15),
-                  aes(label = gene_label), size = 3.5, box.padding = 0.5, max.overlaps = Inf) +
-  labs(x = "log2(Fold Change)", y = "-log10(Adjusted P-value)") +
+  geom_text_repel(data = limma_de_genes_only, # head(limma_de_genes_only,
+            aes(label = gene_label), size = 3.5, box.padding = 0.5, max.overlaps =44) +
+  labs(x = "log2(FC)", y = "-log10(adjusted p value)") +
   theme_bw(base_size = 14) + theme(legend.position = "bottom")
 dev.off()
 
@@ -190,18 +185,21 @@ results_sleuth <- sleuth_results(so_gene, 'reduced:full', 'lrt', show_all = TRUE
   dplyr::distinct(target_id, .keep_all = TRUE)
 
 # --- 6.1. Save Sleuth Output Files ---
-# File 3: All genes from sleuth analysis
 readr::write_tsv(results_sleuth, "sleuth_gene_level_all.tsv")
 
-# File 4: DE genes only from sleuth analysis
-sleuth_de_genes_only <- results_sleuth %>%
-  dplyr::filter(qval <= 0.01)
+sleuth_de_genes_only <- results_sleuth %>%  dplyr::filter(qval <= 0.01)
 readr::write_tsv(sleuth_de_genes_only, "sleuth_gene_level_DE_only.tsv")
 
-pdf("IFIH1.pdf", height=6, width=8)
+pdf("IFIH1_ENSGALT00010050770.pdf", height=6, width=8)
 plot_bootstrap(so_gene, "ENSGALT00010050770.1", x_axis_angle = 90,
                units="est_counts", color_by="condition")
 dev.off()
+
+pdf("IFIH1_ENSGALT00010050768.pdf", height=6, width=8)
+plot_bootstrap(so_gene, "ENSGALT00010050768.1", x_axis_angle = 90,
+               units="est_counts", color_by="condition")
+dev.off()
+
 pdf("RSAD2.pdf", height=6, width=8)
 plot_bootstrap(so_gene, "ENSGALT00010008339.1", x_axis_angle = 90,
                units="est_counts", color_by="condition")
@@ -236,9 +234,9 @@ readr::write_tsv(combined_intersect_df, "Intersection_limma_sleuth_DE_genes.tsv"
 pdf("Volcano_Plot_Intersection.pdf", width = 8, height = 6)
 ggplot(combined_intersect_df, aes(x = logFC, y = -log10(adj.P.Val), colour = significant)) +
   geom_point(alpha = 0.7, size = 2) +
-  scale_colour_manual(name = "Direction",
+  scale_colour_manual(name = "",
         values = c("Upregulated in Infected" = "red", "Downregulated in Infected" = "blue")) +
   geom_text_repel(aes(label = gene_label), size = 3.5, box.padding = 0.5, max.overlaps = 20) +
-  labs(x = "log2(Fold Change)", y = "-log10(Adjusted P-value)") +
+  labs(x = "log2(FC)", y = "-log10(adjusted p value)") +
   theme_bw(base_size = 14) + theme(legend.position = "bottom")
 dev.off()
