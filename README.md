@@ -23,14 +23,13 @@ First, create and activate the Conda environment. This only needs to
 be done once.
 
 2. Create the environment with all necessary R packages
-  conda create -n r_de_env -c conda-forge -c bioconda \
+
+    conda create -n r_de_env -c conda-forge -c bioconda \
     r-base=4.2.2 r-essentials bioconductor-limma \
     bioconductor-edger bioconductor-tximport \
-    bioconductor-sleuth r-pheatmap r-httr \
-    r-ggplot2 r-ggrepel
+    bioconductor-sleuth r-pheatmap r-httr r-ggplot2 r-ggrepel
 
-  # Activate the environment
-  conda activate r_de_env
+   Activate the environment:   conda activate r_de_env
 
 
 3. Required Data
