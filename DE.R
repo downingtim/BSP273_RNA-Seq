@@ -149,6 +149,52 @@ gene_level_limma_results <- gene_level_limma_results %>%
       TRUE                         ~ "Not Significant"    ) # 50% power
   )
 
+
+transcript_id <- "ENSGALT00010008339.1"
+expression_levels <- v$E[transcript_id, ]
+plot_data <- data.frame(  sample = 1:12,
+  expression = expression_levels,
+  condition = ifelse(1:12 %in% c(1, 3, 6, 7, 9, 12), "infc", "mock") )
+
+pdf("limma_RSAD2_ENSGALT00010008339.pdf", width = 8, height = 6)
+ggplot(plot_data, aes(x = condition, y = expression, fill = condition)) +
+  geom_boxplot() +
+  scale_fill_manual(values = c("infc" = "red", "mock" = "blue")) +
+  labs(  title = paste("Expression levels for", transcript_id),
+    x = "Condition", y = "Expression Level (log2 CPM)", fill = "Condition")+
+  theme_minimal()
+dev.off()
+
+transcript_id <- "ENSGALT00010050768"
+expression_levels <- v$E[transcript_id, ]
+plot_data <- data.frame(  sample = 1:12,
+  expression = expression_levels,
+  condition = ifelse(1:12 %in% c(1, 3, 6, 7, 9, 12), "infc", "mock") )
+
+pdf("limma_IFIH1_ENSGALT00010050768.pdf", width = 8, height = 6)
+ggplot(plot_data, aes(x = condition, y = expression, fill = condition)) +
+  geom_boxplot() +
+  scale_fill_manual(values = c("infc" = "red", "mock" = "blue")) +
+  labs(  title = paste("Expression levels for", transcript_id),
+    x = "Condition", y = "Expression Level (log2 CPM)", fill = "Condition")+
+  theme_minimal()
+dev.off()
+
+transcript_id <- "ENSGALT00010050770"
+expression_levels <- v$E[transcript_id, ]
+plot_data <- data.frame(  sample = 1:12,
+  expression = expression_levels,
+  condition = ifelse(1:12 %in% c(1, 3, 6, 7, 9, 12), "infc", "mock") )
+
+pdf("limma_IFIH1_ENSGALT00010050770.pdf", width = 8, height = 6)
+ggplot(plot_data, aes(x = condition, y = expression, fill = condition)) +
+  geom_boxplot() +
+  scale_fill_manual(values = c("infc" = "red", "mock" = "blue")) +
+  labs(  title = paste("Expression levels for", transcript_id),
+    x = "Condition", y = "Expression Level (log2 CPM)", fill = "Condition")+
+  theme_minimal()
+dev.off()
+
 # File 1: All genes from limma analysis
 readr::write_tsv(gene_level_limma_results, "limma_gene_level_all.tsv")
 
@@ -166,7 +212,7 @@ ggplot(gene_level_limma_results, aes(x = logFC, y = -log10(adj.P.Val), colour = 
   scale_colour_manual(name = "",
   values = c("Upregulated in Infected" = "red", "Downregulated in Infected" = "blue", "Not Significant" = "grey"))+
   geom_text_repel(data = limma_de_genes_only, # head(limma_de_genes_only,
-            aes(label = gene_label), size = 3.5, box.padding = 0.5, max.overlaps =44) +
+            aes(label = gene_label), size = 3.5, box.padding = 0.5, max.overlaps=54) +
   labs(x = "log2(FC)", y = "-log10(adjusted p value)") +
   theme_bw(base_size = 14) + theme(legend.position = "bottom")
 dev.off()
@@ -177,7 +223,6 @@ dev.off()
 
 so_gene <- sleuth_prep(s2c, target_mapping = t2g, aggregation_column = 'ens_gene',
                        extra_bootstrap_summary = TRUE, read_bootstrap_tpm = TRUE)
-
 so_gene <- sleuth_fit(so_gene, ~condition, 'full')
 so_gene <- sleuth_fit(so_gene, ~1, 'reduced')
 so_gene <- sleuth_lrt(so_gene, 'reduced', 'full')
