@@ -165,21 +165,6 @@ ggplot(plot_data, aes(x = condition, y = expression, fill = condition)) +
   theme_minimal()
 dev.off()
 
-transcript_id <- "ENSGALT00010050768"
-expression_levels <- v$E[transcript_id, ]
-plot_data <- data.frame(  sample = 1:12,
-  expression = expression_levels,
-  condition = ifelse(1:12 %in% c(1, 3, 6, 7, 9, 12), "infc", "mock") )
-
-pdf("limma_IFIH1_ENSGALT00010050768.pdf", width = 8, height = 6)
-ggplot(plot_data, aes(x = condition, y = expression, fill = condition)) +
-  geom_boxplot() +
-  scale_fill_manual(values = c("infc" = "red", "mock" = "blue")) +
-  labs(  title = paste("Expression levels for", transcript_id),
-    x = "Condition", y = "Expression Level (log2 CPM)", fill = "Condition")+
-  theme_minimal()
-dev.off()
-
 transcript_id <- "ENSGALT00010050770"
 expression_levels <- v$E[transcript_id, ]
 plot_data <- data.frame(  sample = 1:12,
@@ -209,6 +194,28 @@ ggplot(gene_level_limma_results, aes(x = logFC, y = -log10(adj.P.Val), colour = 
   geom_point(alpha = 0.4, size = 1.5) +
   geom_vline(xintercept = c(-2, 2), linetype = "dashed", color = "grey50") +
   geom_hline(yintercept = -log10(0.05), linetype = "dashed", color = "grey50") +
+  scale_colour_manual(name = "",
+  values = c("Upregulated in Infected" = "red", "Downregulated in Infected" = "blue", "Not Significant" = "grey"))+
+  geom_text_repel(data = limma_de_genes_only, # head(limma_de_genes_only,
+            aes(label = gene_label), size = 3.5, box.padding = 0.5, max.overlaps=54) +
+  labs(x = "log2(FC)", y = "-log10(adjusted p value)") +
+  theme_bw(base_size = 14) + theme(legend.position = "bottom")
+dev.off()
+
+# Add significance flags and labels
+gene_level_limma_results <- gene_level_limma_results %>%
+  dplyr::mutate(
+    gene_label = case_when(!is.na(ext_gene) & ext_gene != "" ~ ext_gene, TRUE ~ ens_gene),
+    significant = case_when(
+      adj.P.Val < 0.5 & logFC > 2  ~ "Upregulated in Infected",
+      adj.P.Val < 0.5 & logFC < -2 ~ "Downregulated in Infected",
+      TRUE                         ~ "Not Significant"    ) # 50% power
+  )
+pdf("Volcano_Plot_limma_gene_level_2.pdf", width = 8, height = 6)
+ggplot(gene_level_limma_results, aes(x = logFC, y = -log10(adj.P.Val), colour = significant)) +
+  geom_point(alpha = 0.4, size = 1.5) +
+  geom_vline(xintercept = c(-2, 2), linetype = "dashed", color = "grey50") +
+  geom_hline(yintercept = -log10(0.5), linetype = "dashed", color = "grey50") +
   scale_colour_manual(name = "",
   values = c("Upregulated in Infected" = "red", "Downregulated in Infected" = "blue", "Not Significant" = "grey"))+
   geom_text_repel(data = limma_de_genes_only, # head(limma_de_genes_only,
