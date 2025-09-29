@@ -3,8 +3,6 @@
 # Workflow: Kallisto -> tximport -> limma-voom & sleuth
 # Includes EDA, direct BioMart query, robust gene-level summarisation, DE analysis, 
 # visualisation, and corrected multi-file output.
-##########
-
 
 #################################################################
 ### 1. SETUP: LOAD LIBRARIES
@@ -30,7 +28,6 @@ library(edgeR)
 library(limma)
 library(sleuth)
 
-
 #################################################################
 ### 2. DATA LOADING AND PREPARATION
 #################################################################
@@ -43,8 +40,7 @@ colnames(s2c)[1] = "sample"
 print("### Sample Metadata:")
 print(s2c)
 
-so <- sleuth_prep(s2c,
-                  extra_bootstrap_summary = TRUE,
+so <- sleuth_prep(s2c,                  extra_bootstrap_summary = TRUE,
                   read_bootstrap_tpm = TRUE)
 
 
@@ -112,14 +108,8 @@ t2g <- t2g %>%
                 ext_gene = external_gene_name) %>%
   dplyr::mutate(target_id = paste(ensembl_transcript_id, transcript_version, sep = "."))
 
-# ** FIX FOR DUPLICATES **
 # Ensure every transcript ID is unique to prevent duplication during joins.
-t2g <- t2g %>%
-  dplyr::distinct(target_id, .keep_all = TRUE)
-
-print("### Annotation table retrieved and de-duplicated successfully:")
-head(t2g)
-
+t2g <- t2g %>%  dplyr::distinct(target_id, .keep_all = TRUE)
 
 #################################################################
 ### 5. DIFFERENTIAL EXPRESSION WITH LIMMA-VOOM
@@ -151,7 +141,6 @@ gene_level_limma_results <- annotated_transcripts %>%
   dplyr::group_by(ens_gene) %>%
   dplyr::slice_min(order_by = adj.P.Val, n = 1, with_ties = FALSE) %>%
   dplyr::ungroup() %>%
-  # ** FIX FOR DUPLICATES **: Ensure unique gene IDs
   dplyr::distinct(ens_gene, .keep_all = TRUE)
 
 # Add significance flags and labels
@@ -161,12 +150,10 @@ gene_level_limma_results <- gene_level_limma_results %>%
     significant = case_when(
       adj.P.Val < 0.05 & logFC > 2  ~ "Upregulated in Infected",
       adj.P.Val < 0.05 & logFC < -2 ~ "Downregulated in Infected",
-      TRUE                         ~ "Not Significant"
-    )
+      TRUE                         ~ "Not Significant"    )
   )
 
 # --- 5.5. Save Limma Output Files ---
-print("### Saving gene-level limma results as TSV files...")
 # File 1: All genes from limma analysis
 readr::write_tsv(gene_level_limma_results, "limma_gene_level_all.tsv")
 
@@ -175,7 +162,6 @@ limma_de_genes_only <- gene_level_limma_results %>%
   dplyr::filter(significant != "Not Significant")
 readr::write_tsv(limma_de_genes_only, "limma_gene_level_DE_only.tsv")
 
-
 # --- 5.6. Visualise Gene-Level Limma Results ---
 pdf("Volcano_Plot_limma_gene_level.pdf", width = 8, height = 6)
 ggplot(gene_level_limma_results, aes(x = logFC, y = -log10(adj.P.Val), colour = significant)) +
@@ -183,13 +169,12 @@ ggplot(gene_level_limma_results, aes(x = logFC, y = -log10(adj.P.Val), colour = 
   geom_vline(xintercept = c(-2, 2), linetype = "dashed", color = "grey50") +
   geom_hline(yintercept = -log10(0.05), linetype = "dashed", color = "grey50") +
   scale_colour_manual(name = "Significance",
-                      values = c("Upregulated in Infected" = "red", "Downregulated in Infected" = "blue", "Not Significant" = "grey")) +
+  values = c("Upregulated in Infected" = "red", "Downregulated in Infected" = "blue", "Not Significant" = "grey"))+
   geom_text_repel(data = head(limma_de_genes_only, 15),
                   aes(label = gene_label), size = 3.5, box.padding = 0.5, max.overlaps = Inf) +
   labs(x = "log2(Fold Change)", y = "-log10(Adjusted P-value)") +
   theme_bw(base_size = 14) + theme(legend.position = "bottom")
 dev.off()
-
 
 #################################################################
 ### 6. GENE-LEVEL DE ANALYSIS WITH SLEUTH
@@ -202,11 +187,9 @@ so_gene <- sleuth_fit(so_gene, ~condition, 'full')
 so_gene <- sleuth_fit(so_gene, ~1, 'reduced')
 so_gene <- sleuth_lrt(so_gene, 'reduced', 'full')
 results_sleuth <- sleuth_results(so_gene, 'reduced:full', 'lrt', show_all = TRUE) %>%
-  # ** FIX FOR DUPLICATES **: Ensure unique gene IDs
   dplyr::distinct(target_id, .keep_all = TRUE)
 
 # --- 6.1. Save Sleuth Output Files ---
-print("### Saving gene-level sleuth results as TSV files...")
 # File 3: All genes from sleuth analysis
 readr::write_tsv(results_sleuth, "sleuth_gene_level_all.tsv")
 
@@ -215,6 +198,14 @@ sleuth_de_genes_only <- results_sleuth %>%
   dplyr::filter(qval <= 0.01)
 readr::write_tsv(sleuth_de_genes_only, "sleuth_gene_level_DE_only.tsv")
 
+pdf("IFIH1.pdf", height=6, width=8)
+plot_bootstrap(so_gene, "ENSGALT00010050770.1", x_axis_angle = 90,
+               units="est_counts", color_by="condition")
+dev.off()
+pdf("RSAD2.pdf", height=6, width=8)
+plot_bootstrap(so_gene, "ENSGALT00010008339.1", x_axis_angle = 90,
+               units="est_counts", color_by="condition")
+dev.off()
 
 #################################################################
 ### 7. INTERSECTION OF LIMMA AND SLEUTH RESULTS
@@ -241,16 +232,13 @@ combined_intersect_df <- dplyr::inner_join(limma_intersect_data, sleuth_intersec
 # File 5: The high-confidence intersection of DE genes
 readr::write_tsv(combined_intersect_df, "Intersection_limma_sleuth_DE_genes.tsv")
 
-
 # --- 7.4. Create a Volcano Plot for the intersecting genes only ---
 pdf("Volcano_Plot_Intersection.pdf", width = 8, height = 6)
 ggplot(combined_intersect_df, aes(x = logFC, y = -log10(adj.P.Val), colour = significant)) +
   geom_point(alpha = 0.7, size = 2) +
   scale_colour_manual(name = "Direction",
-                      values = c("Upregulated in Infected" = "red", "Downregulated in Infected" = "blue")) +
+        values = c("Upregulated in Infected" = "red", "Downregulated in Infected" = "blue")) +
   geom_text_repel(aes(label = gene_label), size = 3.5, box.padding = 0.5, max.overlaps = 20) +
   labs(x = "log2(Fold Change)", y = "-log10(Adjusted P-value)") +
   theme_bw(base_size = 14) + theme(legend.position = "bottom")
 dev.off()
-
-print("### Analysis Complete. All files saved.")
