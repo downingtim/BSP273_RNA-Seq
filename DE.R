@@ -165,21 +165,6 @@ ggplot(plot_data, aes(x = condition, y = expression, fill = condition)) +
   theme_minimal()
 dev.off()
 
-transcript_id <- "ENSGALT00010050770"
-expression_levels <- v$E[transcript_id, ]
-plot_data <- data.frame(  sample = 1:12,
-  expression = expression_levels,
-  condition = ifelse(1:12 %in% c(1, 3, 6, 7, 9, 12), "infc", "mock") )
-
-pdf("limma_IFIH1_ENSGALT00010050770.pdf", width = 8, height = 6)
-ggplot(plot_data, aes(x = condition, y = expression, fill = condition)) +
-  geom_boxplot() +
-  scale_fill_manual(values = c("infc" = "red", "mock" = "blue")) +
-  labs(  title = paste("Expression levels for", transcript_id),
-    x = "Condition", y = "Expression Level (log2 CPM)", fill = "Condition")+
-  theme_minimal()
-dev.off()
-
 # File 1: All genes from limma analysis
 readr::write_tsv(gene_level_limma_results, "limma_gene_level_all.tsv")
 
