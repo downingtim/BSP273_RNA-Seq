@@ -127,5 +127,5 @@ Data Tables (.tsv)
     A filtered table of only the significant DE genes from sleuth.
 
   * Intersection_limma_sleuth_DE_genes.tsv
-    The final table of 333 high-confidence genes found by both 
+    The final table of 331 high-confidence genes found by both 
     methods, with their associated statistics.

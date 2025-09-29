@@ -2,13 +2,13 @@ BSP273 bulk RNA-Seq
 
 Quality control
 
-FastQC v0.11.9 (www.bioinformatics.babraham.ac.uk/projects/fastqc/) was used to assess sequence quality. Adapter trimming, removal of reads with low base quality scores (phred score <30), exclusion of ambiguous (N) bases, mismatched base pair correction in overlapping regions, and cutting of poly-G tracts at 3′ ends was completed using Fastp v0.20.0 (Chen et al 2018). Low-quality bases with base qualities <30 and reads with lengths <130 bp were removed using the FASTX-Toolkit v0.0.13 (http://hannonlab.cshl.edu/fastx_toolkit/). MultiQC v1.14 (REF) was used to assess the effectiveness of Fastp and the FASTX-Toolkit by collating FastQC reports.
+FastQC v0.11.9 (www.bioinformatics.babraham.ac.uk/projects/fastqc/) was used to assess sequence quality. Adapter trimming, removal of reads with low base quality scores (phred score <30), exclusion of ambiguous (N) bases, mismatched base pair correction in overlapping regions, and cutting of poly-G tracts at 3′ ends was completed using Fastp v0.20.0 (Chen et al 2018). Low-quality bases with base qualities <30 and reads with lengths <130 bp were removed using the FASTX-Toolkit v0.0.13 (http://hannonlab.cshl.edu/fastx_toolkit/). MultiQC v1.14 (Ewels et al 2016) was used to assess the effectiveness of Fastp and the FASTX-Toolkit by collating FastQC reports.
 
 Read mapping and differential expression analysis
 
 Read pseudoalignment was completed with Kallisto v0.51.1 (Bray et al 2015) using the Gallus gallus bGalGal1 genome Ensembl v111 (January 2024) with 44,937 cDNAs as a k-mer index. This quantified transcript expression based on read to k-mer matches in an alignment-free manner. The resulting TSV files were converted for other tools using tximport v1.26.1 (Soneson et al 2015). Gene expression analyses were completing using R v4.2.2 (R Core Team 2024) and Bioconductor v3.16 (Ihaka & Gentleman 1996). Expression was examined using two approaches. The first was with R package limma v3.54.2 (Smyth 2004, Ritchie et al 2015) across 24,982 valid transcripts post-filtering. This used the Gallus gallus bGalGal1 CDS annotation via R package BiomaRt v2.54.1 (Durinck et al 2009). The transcripts’ mean and variance in expression was not correlated. The transcripts’ rates were quantile normalised, voom-transformed and changes in expression were interpreted using an empirical Bayes approach via a moderated t-statistic. Genes with a log2 fold-change (FC) > |2| and an adjusted p value < 0.05 were considered differentially expressed (DE) and were investigated further. 
 
-The second differential gene expression analysis approach was implemented using the R/Bioconductor package Sleuth v0.30.1 across 11,452 genes, which estimated beta coefficients for each variable based on generalised linear models (Pimentel et al 2017). Sleuth was used because alternatives may be prone to false positives (Li et al 2022). We performed a likelihood ratio test (LRT) between the six infected samples versus the six mock samples using a q-value threshold of 0.01 to obtain DE genes. Data was extracted with readr v2.1.5 (REF), dplyr v1.1.4 (REF) and tibble v3.3.0 (REF). Plots were visualised with Sleuth, ggplot2 v3.5.2 (Wickham 2016) and ggrepel v0.9.6 (Slowikowski 2024). The intersection of the limma DE genes and Sleuth DE genes was assessed further.
+The second differential gene expression analysis approach was implemented using the R/Bioconductor package Sleuth v0.30.1 across 11,452 genes, which estimated beta coefficients for each variable based on generalised linear models (Pimentel et al 2017). Sleuth was used because alternatives may be prone to false positives (Li et al 2022). We performed a likelihood ratio test (LRT) between the six infected samples versus the six mock samples using a q-value threshold of 0.01 to obtain DE genes. Data was extracted with readr v2.1.5 (Wickham et al 2024), dplyr v1.1.4 (Wickham et al 2025) and tibble v3.3.0 (Muller & Wickahm 2025). Plots were visualised with Sleuth, ggplot2 v3.5.2 (Wickham 2016) and ggrepel v0.9.6 (Slowikowski 2024). The intersection of the limma DE genes and Sleuth DE genes was assessed further.
 
 We determined that a log2FC > |2| for a sample size of 6 per group would have 50% power to find DE genes given a FDR of 0.05, 14,000 genes of which 10% were DE, an average read coverage of 100, a psuedo sample size of 10, a range of dispersion values, and a uniform distribution of expression values using the R package ssizeRNA v1.3.2 (Bi & Liu 2019). 
  
@@ -28,19 +28,20 @@ Volcano. Volcano plot of DE genes from limma output where each point is a single
 Heatmap. A heatmap of expression rates of the 331 high-confidence DE genes where the genes are arrayed across rows and the samples are represented by columns. The samples and genes are both clustered based on similarity of expression within this subset. The Z-normalised gene expression rate goes from high (red) to neutral (yellow) to low (blue). 
 
  
-References
+References:
+
 Bi R, Liu P (2019). ssizeRNA: Sample Size Calculation for RNA-Seq Experimental Design. R package version 1.3.2.
 Bray NL, Pimentel H, Melsted P, Pachter L. Near-optimal probabilistic RNA-seq quantification. Nat Biotechnol. 2016 34(5):525-7. doi: 10.1038/nbt.3519.  
 Chen S, Zhou Y, Chen Y, Gu J. fastp: an ultra-fast all-in-one FASTQ preprocessor. Bioinformatics. 2018 34(17):i884–i890. doi: 10.1093/bioinformatics/bty560
 Durinck S, Spellman P, Birney E, Huber W (2009). “Mapping identifiers for the integration of genomic datasets with the R/Bioconductor package biomaRt.” Nature Protocols, 4, 1184–1191.
+Ewels P, Magnusson M, Lundin S, Käller M. MultiQC: summarize analysis results for multiple tools and samples in a single report. Bioinformatics. 2016 32(19):3047-8. doi: 10.1093/bioinformatics/btw354
 Li Y, Ge X, Peng F, Li W, Li JJ. Exaggerated false positives by popular differential expression methods when analyzing human population samples. Genome Biol. 2022 23(1):79. doi: 10.1186/s13059-022-02648-4
+Müller K, Wickham H. 2025. tibble: Simple Data Frames. R package version 3.3.0, https://tibble.tidyverse.org/.
 Pimentel H, Bray NL, Puente S, Melsted P, Pachter L. Differential analysis of RNA-seq incorporating quantification uncertainty. Nat Methods. 2017 14(7):687-690. doi: 10.1038/nmeth.4324
 Ritchie ME, Phipson B, Wu D, Hu Y, Law CW, Shi W, Smyth GK. limma powers differential expression analyses for RNA-sequencing and microarray studies. Nucleic Acids Res. 2015 43(7):e47. doi: 10.1093/nar/gkv007
 Slowikowski K (2024). ggrepel: Automatically Position Non-Overlapping Text Labels with 'ggplot2'. https://ggrepel.slowkow.com/, https://github.com/slowkow/ggrepel.
 Smyth GK. 2004. Linear models and empirical Bayes methods for assessing differential expression in microarray experiments. Stat Appl Genet Mol Biol. 3:3.
 Wickham H (2016). ggplot2: Elegant Graphics for Data Analysis. Springer-Verlag New York. ISBN 978-3-319-24277-4, https://ggplot2.tidyverse.org
-
-
-
-
+Wickham H, Hester J, Bryan J. 2024. readr: Read Rectangular Text Data. R package version 2.1.5, https://github.com/tidyverse/readr, https://readr.tidyverse.org.
+Wickham H, François R, Henry L, Müller K, Vaughan D. 2025. dplyr: A Grammar of Data Manipulation. R package version 1.1.4.9000, https://github.com/tidyverse/dplyr.
 
