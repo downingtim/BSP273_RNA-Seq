@@ -204,7 +204,7 @@ ggplot(gene_level_limma_results, aes(x = logFC, y = -log10(adj.P.Val), colour = 
   scale_colour_manual(name = "",
   values = c("Upregulated in Infected" = "red", "Downregulated in Infected" = "blue", "Not Significant" = "grey"))+
   geom_text_repel(data = limma_de_genes_only, # head(limma_de_genes_only,
-            aes(label = gene_label), size = 3.5, box.padding = 0.5, max.overlaps=54) +
+            aes(label = gene_label), size = 3.5, box.padding = 0.5, max.overlaps=74) +
   labs(x = "log2(FC)", y = "-log10(adjusted p value)") +
   theme_bw(base_size = 14) + theme(legend.position = "bottom")
 dev.off()
